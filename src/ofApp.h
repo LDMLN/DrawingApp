@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "Spawner.h"
+
 #define WIDTH 1024
 #define HEIGHT 768
 
@@ -27,8 +28,22 @@ class ofApp : public ofBaseApp{
 
 		void drawWithBrush(int x, int y);
 		void eraseWithEraser(int x, int y);
+		float findDirection(int x, int y);
+		
+		//random drawing functions
+		void randomBrush();
+		void convertStringToIntArray(string str);
+		void makeRequest();
 
+		void generateImage();
+
+		int brushArray[12];
+		vector<int> coordinateArray;
+		//int coordinateArray[100];
 		int guiWidth = 200;
+
+		bool randomBrushCallLimiter = false;
+
 
 		//--------------------------------
 		//			Main menu gui
@@ -38,6 +53,29 @@ class ofApp : public ofBaseApp{
 		ofParameter<bool> drawingApp;
 		ofParameter<bool> randomDrawing;
 		//---------------------------------
+		//			Main menu helper gui
+		ofxPanel menuExplanations;
+		ofParameterGroup explanationParameters;
+
+		ofParameter<std::string> drawingAppExplanation;
+		ofParameter<std::string> randomDrawingExplanation;
+		//---------------------------------
+		//			Warnings gui
+		ofxPanel warningsPanel;
+		ofParameterGroup warningsHolder;
+
+		ofParameter<std::string> spawnerWarning;
+		ofParameter<std::string> eraserAdvice;
+
+		//---------------------------------
+		//			help wanted gui
+		ofxPanel helpWanted;
+		ofParameterGroup helpButtonHolder;
+
+		ofParameter<bool> helpNeeded;
+		ofParameter<bool> warnings;
+		//---------------------------------
+		// 
 		//			Exit menu
 		ofxPanel exitMenu;
 
@@ -54,11 +92,12 @@ class ofApp : public ofBaseApp{
 		ofParameterGroup sliderGroup;
 		ofParameter<int> brushSize;
 		ofParameter<int> brushType;
-		ofParameter<float> floatSlider;
-		ofParameter<bool> eraseAfterDraw;
+		ofParameter<bool> rotateTriangles;
+		ofParameter<bool> unfilled;
 		ofParameter<ofColor> colorSlider;
 		ofParameter<glm::vec3> backgroundColor;
 		ofParameter<bool> btnClear;
+		ofParameter<bool> randomize;
 
 		ofParameterGroup effectsGroup;
 		ofParameter<bool> randomizeColors;
@@ -78,5 +117,6 @@ class ofApp : public ofBaseApp{
 		Spawner mySpawner;
 
 		vector<Spawner> groupOfSpawners;
+		vector<Spawner> eraserGroup;
 		//----------------------------------------
 };
