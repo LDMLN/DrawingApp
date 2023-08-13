@@ -120,9 +120,9 @@ void ofApp::update(){
 
 	if (randomize) {
 		randomize = false;
-		//makeRequest();
-		//randomBrush();
-		generateImage();
+		makeRequest();
+		randomBrush();
+		//generateImage();
 	}
 
 	if (exitApp) {
@@ -176,6 +176,7 @@ void ofApp::draw() {
 		exitMenu.draw();
 
 		if (!randomBrushCallLimiter) {
+			generateImage();
 			generateImage();
 			//randomize background and brush call
 			
@@ -415,11 +416,17 @@ void ofApp::makeRequest() {
 	myFile << "REQUEST";
 
 	myFile.close();
+
+	ofstream myCoordFile("G:\\OSUcourses\\CS361\\randomPickMicroservice\\coordinates.txt");
+
+	myCoordFile << "REQUEST";
+
+	myCoordFile.close();
 }
 
 //--------------------------------------------------------------
 void ofApp::randomBrush() {
-	for (int i = 0; i < 1000000000; i++) {
+	for (int i = 0; i < 10000000; i++) {
 		continue;
 	}
 
@@ -508,6 +515,7 @@ void ofApp::generateImage() {
 
 	fbo.begin();
 	for (int i = 0; i < coordinateArray.size(); i += 2) {
+		colorSlider = ofColor(ofRandom(255), ofRandom(255), ofRandom(255));
 		if (i + 3 < coordinateArray.size()) {
 			ofPoint p0(coordinateArray[i], coordinateArray[i + 1]);
 			ofPoint p1(coordinateArray[i + 2], coordinateArray[i + 3]);
@@ -521,9 +529,16 @@ void ofApp::generateImage() {
 			int dy = -abs(p1.y - p0.y);
 			int sy = p0.y < p1.y ? 1 : -1;
 			int error = dx + dy;
+			//these two next values help to add interesting spacing to the image, 
+			// not part of Bresenham's equation
+			int skip_count = 0;
+			int random_skipper = ofRandom(1, 75);
 
 			while (true) {
-				drawWithBrush(p0.x, p0.y);
+				if (skip_count % random_skipper == 0) {
+					drawWithBrush(p0.x, p0.y);
+				}
+				skip_count += 1;
 				if (p0.x == p1.x && p0.y == p1.y) {
 					break;
 				}
