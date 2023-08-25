@@ -34,12 +34,10 @@ class ofApp : public ofBaseApp{
 		void randomBrush();
 		void convertStringToIntArray(string str);
 		void makeRequest();
-
 		void generateImage();
 
 		int brushArray[12];
 		vector<int> coordinateArray;
-		//int coordinateArray[100];
 		int guiWidth = 200;
 
 		bool randomBrushCallLimiter = false;
@@ -113,7 +111,8 @@ class ofApp : public ofBaseApp{
 		int canvasHeight = 600;
 
 		bool spawnerExist;
-
+		
+		//spawner class, used for brush points.
 		Spawner mySpawner;
 
 		vector<Spawner> groupOfSpawners;

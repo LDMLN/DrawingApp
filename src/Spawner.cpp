@@ -53,15 +53,15 @@ void Spawner::update() {
             }
             triangleSpeed *= ofVec2f(-1, 1);
         }
-        else if (tPoint1.x > 800 - size || tPoint2.x > 800 - size || tPoint3.x > 800 - size) {
-            if (tPoint1.x > 800 - size) {
-                tPoint1.x = 800 - size;
+        else if (tPoint1.x > 800 || tPoint2.x > 800 || tPoint3.x > 800) {
+            if (tPoint1.x > 800) {
+                tPoint1.x = 800;
             }
-            if (tPoint2.x > 800 - size) {
-                tPoint2.x = 800 - size;
+            if (tPoint2.x > 800) {
+                tPoint2.x = 800;
             }
-            if (tPoint3.x > 800 - size) {
-                tPoint3.x = 800 - size;
+            if (tPoint3.x > 800) {
+                tPoint3.x = 800;
             }
             triangleSpeed *= ofVec2f(-1, 1);
         }
@@ -79,15 +79,15 @@ void Spawner::update() {
             triangleSpeed *= ofVec2f(1, -1);
         }
 
-        else if (tPoint1.y > 600 - size || tPoint2.y > 600 - size || tPoint3.y > 600 - size) {
-            if (tPoint1.y > 600 - size) {
-                tPoint1.y = 600 - size;
+        else if (tPoint1.y > 600 || tPoint2.y > 600 || tPoint3.y > 600) {
+            if (tPoint1.y > 600) {
+                tPoint1.y = 600;
             }
-            if (tPoint2.y > 600 - size) {
-                tPoint2.y = 600 - size;
+            if (tPoint2.y > 600) {
+                tPoint2.y = 600;
             }
-            if (tPoint3.y > 600 - size) {
-                tPoint3.y = 600 - size;
+            if (tPoint3.y > 600) {
+                tPoint3.y = 600;
             }
             triangleSpeed *= ofVec2f(1, -1);
         }
@@ -107,7 +107,9 @@ void Spawner::update() {
 void Spawner::draw() {
     ofSetColor(color);
     if (brushType == 1) {
+        ofSetRectMode(OF_RECTMODE_CENTER);
         ofDrawRectangle(x, y, size, size);
+        ofSetRectMode(OF_RECTMODE_CORNER);
     }
     else if (brushType == 2) {
         ofDrawCircle(x, y, size);

@@ -120,7 +120,7 @@ void ofApp::update(){
 
 	if (randomize) {
 		randomize = false;
-		makeRequest();
+		//makeRequest();
 		randomBrush();
 		//generateImage();
 	}
@@ -144,7 +144,6 @@ void ofApp::draw() {
 			warningsPanel.draw();
 		}
 	}
-
 
 	if (drawingApp) {
 		fbo.draw(0, 0);
@@ -178,15 +177,9 @@ void ofApp::draw() {
 		if (!randomBrushCallLimiter) {
 			generateImage();
 			generateImage();
-			//randomize background and brush call
-			
-			//call partner microservice
-			//makeRequest();
-			//receive data from microservice and implement
-			//randomBrush();
-			
 			randomBrushCallLimiter = true;
 		}
+
 		if (groupOfSpawners.size() > 0) {
 			if (unfilled) {
 				ofNoFill();
@@ -205,29 +198,25 @@ void ofApp::draw() {
 
 //--------------------------------------------------------------
 void ofApp::drawWithBrush(int x, int y) {
-	ofSetRectMode(OF_RECTMODE_CENTER);
-
-	//if you want to make the brushes 1-3 not be overridden when brush 4 draws, make them classes like 4. 
-	// (should only have 1-3 brushes then, one for each shape, as subclasses of Spawner).
-	//draws with color selected
-	if (!randomizeColors) {
-		ofSetColor(colorSlider);
-
+	//sets color of brush depending on if randomizeColors toggled or not
+	ofColor brushColor = randomizeColors ? ofColor(ofRandom(255), ofRandom(255), ofRandom(255)) : colorSlider;
+		//rectangle brush
 		if (brushType == 1) {
 			Spawner tempRect;
 			if (x <= fbo.getWidth() && y <= fbo.getHeight()) {
-				tempRect.setup(x, y, brushSize, colorSlider, brushType, spawnFromBrush, ofVec2f(0,0), ofVec2f(0,0), ofVec2f(0,0));
+				tempRect.setup(x, y, brushSize, brushColor, brushType, spawnFromBrush, ofVec2f(0,0), ofVec2f(0,0), ofVec2f(0,0));
 				groupOfSpawners.push_back(tempRect);
 			}
-			//ofDrawRectangle(x, y, brushSize, brushSize);
 		}
+		//circle brush
 		else if (brushType == 2) {
 			Spawner tempCircle;
 			if (x <= fbo.getWidth() && y <= fbo.getHeight()) {
-				tempCircle.setup(x, y, brushSize, colorSlider, brushType, spawnFromBrush, ofVec2f(0,0), ofVec2f(0,0), ofVec2f(0,0));
+				tempCircle.setup(x, y, brushSize, brushColor, brushType, spawnFromBrush, ofVec2f(0,0), ofVec2f(0,0), ofVec2f(0,0));
 				groupOfSpawners.push_back(tempCircle);
 			}
 		}
+		//triangle brush
 		else if (brushType == 3) {
 			ofVec2f mousePos(x, y);
 
@@ -251,60 +240,10 @@ void ofApp::drawWithBrush(int x, int y) {
 
 			Spawner tempTri;
 			if (x <= fbo.getWidth() && y <= fbo.getHeight()) {
-				tempTri.setup(x, y, brushSize, colorSlider, brushType, spawnFromBrush, tPoint1, tPoint2, tPoint3);
+				tempTri.setup(x, y, brushSize, brushColor, brushType, spawnFromBrush, tPoint1, tPoint2, tPoint3);
 				groupOfSpawners.push_back(tempTri);
 			}
 		}
-	}
-	//randomized colors
-	else if (randomizeColors) {
-		ofColor randomColor = ofColor(ofRandom(255), ofRandom(255), ofRandom(255));
-		ofSetColor(randomColor);
-		if (brushType == 1) {
-			Spawner tempRect;
-			if (x <= fbo.getWidth() && y <= fbo.getHeight()) {
-				tempRect.setup(x, y, brushSize, randomColor, brushType, spawnFromBrush, ofVec2f (0,0), ofVec2f(0,0), ofVec2f(0,0));
-				groupOfSpawners.push_back(tempRect);
-			}
-			//ofDrawRectangle(x, y, brushSize, brushSize);
-		}
-		else if (brushType == 2) {
-			Spawner tempCircle;
-			if (x <= fbo.getWidth() && y <= fbo.getHeight()) {
-				tempCircle.setup(x, y, brushSize, randomColor, brushType, spawnFromBrush, ofVec2f(0,0), ofVec2f(0,0), ofVec2f(0,0));
-				groupOfSpawners.push_back(tempCircle);
-			}
-		}
-		else if (brushType == 3) {
-			ofVec2f mousePos(x, y);
-
-			//spawns triangle at origin to make easier for rotating
-			ofVec2f tPoint1(0, brushSize);
-			ofVec2f tPoint2(brushSize * 4, 0);
-			ofVec2f tPoint3(0, -brushSize);
-
-			//rotates based on current compass rose direction of mouse
-			if (rotateTriangles) {
-				float rotation = findDirection(x, y);
-
-				tPoint1.rotate(rotation);
-				tPoint2.rotate(rotation);
-				tPoint3.rotate(rotation);
-			}
-			//moves triangle to mouse position
-			tPoint1 += mousePos;
-			tPoint2 += mousePos;
-			tPoint3 += mousePos;
-
-			Spawner tempTri;
-			if (x <= fbo.getWidth() && y <= fbo.getHeight()) {
-				tempTri.setup(x, y, brushSize, randomColor, brushType, spawnFromBrush, tPoint1, tPoint2, tPoint3);
-				groupOfSpawners.push_back(tempTri);
-			}
-		}
-
-
-	}
 }
 //---------------------------------------------------------------
 
@@ -317,8 +256,7 @@ float ofApp::findDirection(int x, int y) {
 }
 
 void ofApp::eraseWithEraser(int x, int y) {
-	//this is just drawing the background color over it so when you change background color it's visible
-	//thinking of a way to fix this would be a nice addition.
+	//erase point that mouse hovers over
 	for (int i = 0; i < groupOfSpawners.size(); i++) {
 		float distance = ofDist(x, y, groupOfSpawners[i].x, groupOfSpawners[i].y);
 		if (distance < groupOfSpawners[i].size) {
@@ -330,12 +268,14 @@ void ofApp::eraseWithEraser(int x, int y) {
 
 //---------------------------------------------------------------
 void ofApp::keyPressed(int key){
+	//take screenshot
 	if (key == ' ') {
 		imgScreenshot.grabScreen(0, 0, fbo.getWidth(), fbo.getHeight());
 		string filename = "screenshot_" + ofGetTimestampString() + ".png";
 		imgScreenshot.save(filename);
 	}
 
+	//clear board
 	if (key == OF_KEY_DEL) {
 		btnClear = true;
 	}
@@ -410,6 +350,8 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 }
 //--------------------------------------------------------------
+//used in a prior version of this app that involved file writing/reading and calling a microservice.
+/*
 void ofApp::makeRequest() {
 	ofstream myFile("G:\\OSUcourses\\CS361\\randomPickMicroservice\\options.txt");
 
@@ -422,10 +364,26 @@ void ofApp::makeRequest() {
 	myCoordFile << "REQUEST";
 
 	myCoordFile.close();
+
 }
+*/
 
 //--------------------------------------------------------------
 void ofApp::randomBrush() {
+	brushType = ofRandom(1, 4);
+	brushSize = ofRandom(3, 65);
+	colorSlider = ofColor(ofRandom(255), ofRandom(255), ofRandom(255));
+	backgroundColor = glm::vec3(ofRandom(255), ofRandom(255), ofRandom(255));
+	//low chance of randomly having the spawn feature be toggled
+	spawnFromBrush = (int)ofRandom(20) == 1 ? 1 : 0;
+	if (brushType == 3) {
+		rotateTriangles = (int)ofRandom(2);
+	}
+
+	//the following is an implementation of a version of this app that I had made previously that 
+	//incorporated a microservice and file reading.
+	
+	/*
 	for (int i = 0; i < 10000000; i++) {
 		continue;
 	}
@@ -455,9 +413,11 @@ void ofApp::randomBrush() {
 
 
 	myReadFile.close();
+	*/
 }
 //--------------------------------------------------------------
-
+//used in a prior version of this app that involved file writing/reading and calling a microservice.
+/*
 void ofApp::convertStringToIntArray(string str) {
 	int str_length = str.length();
 	std:string num_builder = "";
@@ -478,47 +438,18 @@ void ofApp::convertStringToIntArray(string str) {
 		}
 	}
 }
+*/
 //--------------------------------------------------------------
 void ofApp::generateImage() {
-	makeRequest();
+	//makeRequest();
 	randomBrush();
-
-	//for (int i = 0; i < 1000000000; i++) {
-	//	continue;
-	//}
-
-	std::string myText;
-
-	//checks where the file is currently working from 
-	//std::cout << std::filesystem::current_path().string() << std::endl;
-
-	std::ifstream myReadFile("G:\\OSUcourses\\CS361\\randomPickMicroservice\\coordinates.txt");
-
-	int m = 0;
-
-	coordinateArray.clear();
-
-	while (getline(myReadFile, myText, ',')) {
-		coordinateArray.push_back(stoi(myText));
-		//std::cout << "myText: " << myText << "\n";
-		//std::cout << "coordinate Array: " << coordinateArray[m] << "\n";
-		m++;
-	}
-
-	/*
-	for (int j = 0; j < coordinateArray.size(); j++) {
-		std::cout << coordinateArray[j] << "\n";
-	}
-	*/
-
-	//std::cout << coordinateArray[coordinateArray.size()-1] << "\n";
+	spawnFromBrush = 0;
 
 	fbo.begin();
-	for (int i = 0; i < coordinateArray.size(); i += 2) {
+	for (int i = 0; i < (int)ofRandom(20, 120); i++) {
 		colorSlider = ofColor(ofRandom(255), ofRandom(255), ofRandom(255));
-		if (i + 3 < coordinateArray.size()) {
-			ofPoint p0(coordinateArray[i], coordinateArray[i + 1]);
-			ofPoint p1(coordinateArray[i + 2], coordinateArray[i + 3]);
+		ofPoint p0((int)ofRandom(1000), (int)ofRandom(761));
+		ofPoint p1((int)ofRandom(1000), (int)ofRandom(761));
 
 
 			//Bresenham's line algorithm
@@ -559,8 +490,48 @@ void ofApp::generateImage() {
 				}
 			}
 		}
-	}
 	fbo.end();
+
+	//old code from a version of this app that used a microservice and file reading/writing
+
+	/*
+	for (int i = 0; i < 1000000000; i++) {
+		continue;
+	}
+
+	std::string myText;
+
+	//checks where the file is currently working from
+	//std::cout << std::filesystem::current_path().string() << std::endl;
+
+	std::ifstream myReadFile("G:\\OSUcourses\\CS361\\randomPickMicroservice\\coordinates.txt");
+
+	int m = 0;
+
+	coordinateArray.clear();
+
+	while (getline(myReadFile, myText, ',')) {
+		coordinateArray.push_back(stoi(myText));
+		//std::cout << "myText: " << myText << "\n";
+		//std::cout << "coordinate Array: " << coordinateArray[m] << "\n";
+		m++;
+	}
+
+	/*
+	for (int j = 0; j < coordinateArray.size(); j++) {
+		std::cout << coordinateArray[j] << "\n";
+	}
+
+
+	//std::cout << coordinateArray[coordinateArray.size()-1] << "\n";
+	fbo.begin();
+	/*
+	for (int i = 0; i < coordinateArray.size(); i += 2) {
+		colorSlider = ofColor(ofRandom(255), ofRandom(255), ofRandom(255));
+		if (i + 3 < coordinateArray.size()) {
+			ofPoint p0(coordinateArray[i], coordinateArray[i + 1]);
+			ofPoint p1(coordinateArray[i + 2], coordinateArray[i + 3]);
+	*/
 }
 
 //--------------------------------------------------------------
