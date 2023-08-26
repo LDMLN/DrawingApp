@@ -120,7 +120,6 @@ void ofApp::update(){
 
 	if (randomize) {
 		randomize = false;
-		//makeRequest();
 		randomBrush();
 		//generateImage();
 	}
