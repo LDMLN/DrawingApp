@@ -17,8 +17,8 @@ void ofApp::setup(){
 
 	//main menu option explanations
 	explanationParameters.setName("explanation");
-	explanationParameters.add(drawingAppExplanation.set("This allows you to draw manually", "default"));
-	explanationParameters.add(randomDrawingExplanation.set("Will randomly generate a drawing,\nmay take several seconds", "default"));
+	explanationParameters.add(drawingAppExplanation.set("This allows you to draw manually", "This allows you to draw manually"));
+	explanationParameters.add(randomDrawingExplanation.set("Will randomly generate a drawing,\nmay take several seconds", "Will randomly generate a drawing,\nmay take several seconds"));
 
 	menuExplanations.setDefaultHeight(25);
 	menuExplanations.setup(explanationParameters);
